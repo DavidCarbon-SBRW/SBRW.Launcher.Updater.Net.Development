@@ -5,9 +5,9 @@ using System.IO;
 using System.Net;
 using System.Windows.Forms;
 using System.IO.Compression;
-using ZipFile = System.IO.Compression.ZipFile;
+//using ZipFile = System.IO.Compression.ZipFile;
 using System.Threading;
-using SimpleJSON;
+//using SimpleJSON;
 using System.Web.Script.Serialization;
 using GameLauncherUpdater.App;
 
@@ -55,7 +55,7 @@ namespace GameLauncherUpdater
             }
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
+            /*
             var client = new WebClient();
             Uri StringToUri = new Uri("https://api.worldunited.gg/update.php?version=" + version);
             client.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion + " (+https://github.com/SoapBoxRaceWorld/GameLauncher_NFSW)");
@@ -88,14 +88,14 @@ namespace GameLauncherUpdater
                 {
                     Information.Text = "Failed to Connect to Main API --> Connecting to GitHub API";
                 }
-            };
+            };*/
             
-            var client3 = new WebClient();
-            Uri StringToUri2 = new Uri("https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases/latest");
-            client3.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion + " (+https://github.com/SoapBoxRaceWorld/GameLauncher_NFSW)");
-            client3.CancelAsync();
-            client3.DownloadStringAsync(StringToUri2);
-            client3.DownloadStringCompleted += (sender3, e3) =>
+            var client = new WebClient();
+            Uri StringToUri = new Uri("https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases/latest");
+            client.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion + " (+https://github.com/SoapBoxRaceWorld/GameLauncher_NFSW)");
+            client.CancelAsync();
+            client.DownloadStringAsync(StringToUri);
+            client.DownloadStringCompleted += (sender3, e3) =>
             {
                 try
                 {
@@ -105,10 +105,10 @@ namespace GameLauncherUpdater
                     {
                         Thread thread = new Thread(() =>
                         {
-                            WebClient client4 = new WebClient();
-                            client4.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
-                            client4.DownloadFileCompleted += new AsyncCompletedEventHandler(Client_DownloadFileCompleted);
-                            client4.DownloadFileAsync(new Uri("http://github.com/SoapboxRaceWorld/GameLauncher_NFSW/releases/download/" + json.tag_name + "/Release_" + json.tag_name + ".zip"), tempNameZip);
+                            WebClient client2 = new WebClient();
+                            client2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
+                            client2.DownloadFileCompleted += new AsyncCompletedEventHandler(Client_DownloadFileCompleted);
+                            client2.DownloadFileAsync(new Uri("http://github.com/SoapboxRaceWorld/GameLauncher_NFSW/releases/download/" + json.tag_name + "/Release_" + json.tag_name + ".zip"), tempNameZip);
                         });
                         thread.Start();
                     }
