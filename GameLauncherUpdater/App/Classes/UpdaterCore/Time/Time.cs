@@ -1,9 +1,9 @@
 using System;
 using System.Windows.Forms;
 
-namespace GameLauncherUpdater
+namespace GameLauncherUpdater.App.Classes.UpdaterCore.Time
 {
-    class Delay
+    class Time
     {
         public static void WaitSeconds(int sec)
         {
