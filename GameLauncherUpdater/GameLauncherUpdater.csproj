@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>GameLauncherUpdater</RootNamespace>
     <AssemblyName>GameLauncherUpdater</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -54,6 +54,9 @@
   <PropertyGroup>
     <ApplicationIcon>Launcher-W.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>GameLauncherUpdater.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,8 +74,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App\ReleaseModel.cs" />
-    <Compile Include="App\Delay.cs" />
+    <Compile Include="App\Classes\SystemPlatform\Wine\Wine.cs" />
+    <Compile Include="App\Classes\UpdaterCore\Json\GitHubReleaseSchema.cs" />
+    <Compile Include="App\Classes\UpdaterCore\Support\Strings.cs" />
+    <Compile Include="App\Classes\UpdaterCore\Time\Time.cs" />
+    <Compile Include="App\Classes\UpdaterCore\Validator\JSON\IsJSONValid.cs" />
     <Compile Include="Updater.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,6 +125,7 @@
     <Content Include="Launcher-W.ico" />
     <None Include="Resources\Background.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if exist "$(SolutionDir)Keys\Launcher.p12" "C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x86\signtool.exe" sign /f "$(SolutionDir)Keys\Launcher.p12" /p "Launcher Development CRT" /d "Soapbox Race World" /du "https://soapboxrace.world" /tr http://timestamp.digicert.com /td SHA256 "$(TargetPath)"</PostBuildEvent>
