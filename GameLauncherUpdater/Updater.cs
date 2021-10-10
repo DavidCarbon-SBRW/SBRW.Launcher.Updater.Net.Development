@@ -11,7 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using GameLauncherUpdater.App.Classes.UpdaterCore.Json;
 using GameLauncherUpdater.App.Classes.UpdaterCore.Time;
-using GameLauncherUpdater.App.Classes.SystemPlatform.Wine;
+using GameLauncherUpdater.App.Classes.SystemPlatform.UnixOS;
 using GameLauncherUpdater.App.Classes.UpdaterCore.Validator.JSON;
 using GameLauncherUpdater.App.Classes.UpdaterCore.Support;
 
@@ -21,7 +21,8 @@ namespace GameLauncherUpdater
     {
         public static string LauncherFolder = Strings.Encode(AppDomain.CurrentDomain.BaseDirectory);
         public static string LauncherUpdaterFolder = Strings.Encode(Path.Combine(LauncherFolder, "Updater"));
-        public static string TempNameZip = (!Wine.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Update.zip");
+        public static string TempLauncherNameZip = (!UnixOS.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Launcher_Update.zip");
+        public static string TempUpdaterNameZip = Path.Combine(LauncherUpdaterFolder, "Support_Update.zip");
         public static string Version;
 
         public Updater()
@@ -47,7 +48,31 @@ namespace GameLauncherUpdater
 
             if (args.Length == 2)
             {
-                Process.GetProcessById(Convert.ToInt32(args[1])).Kill();
+                bool Launcher_Process_ID_Terminated = false;
+                try
+                {
+                    Process Launcher_Process_ID = Process.GetProcessById(Convert.ToInt32(args[1]));
+                    if (!Launcher_Process_ID.HasExited)
+                    {
+                        Launcher_Process_ID_Terminated = Launcher_Process_ID.CloseMainWindow();
+
+                        if (!Launcher_Process_ID_Terminated)
+                        {
+                            Launcher_Process_ID.Kill();
+                        }
+                    }
+                }
+                catch
+                {
+                    try
+                    {
+                        if (!Launcher_Process_ID_Terminated)
+                        {
+                            Process.GetProcessById(Convert.ToInt32(args[1])).Kill();
+                        }
+                    }
+                    catch { }
+                }
             }
 
             if (File.Exists("GameLauncher.exe"))
@@ -121,7 +146,7 @@ namespace GameLauncherUpdater
                     {
                         try
                         {
-                            if (Wine.Detected() && !Directory.Exists(LauncherUpdaterFolder))
+                            if (UnixOS.Detected() && !Directory.Exists(LauncherUpdaterFolder))
                             {
                                 Directory.CreateDirectory(LauncherUpdaterFolder);
                             }
@@ -134,9 +159,9 @@ namespace GameLauncherUpdater
                                 {
                                     WebClient client2 = new WebClient();
                                     client2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
-                                    client2.DownloadFileCompleted += new AsyncCompletedEventHandler(Client_DownloadFileCompleted);
+                                    client2.DownloadFileCompleted += new AsyncCompletedEventHandler(Launcher_Client_DownloadFileCompleted);
                                     client2.DownloadFileAsync(new Uri("http://github.com/SoapboxRaceWorld/GameLauncher_NFSW/releases/download/" +
-                                        json.tag_name + "/Release_" + json.tag_name + ".zip"), TempNameZip);
+                                        json.tag_name + "/Release_" + json.tag_name + ".zip"), TempLauncherNameZip);
                                 });
                                 thread.Start();
                             }
@@ -191,13 +216,13 @@ namespace GameLauncherUpdater
             });
         }
 
-        void Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        void Launcher_Client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             this.BeginInvoke((MethodInvoker)delegate
             {
                 DownloadProgress.Style = ProgressBarStyle.Marquee;
 
-                using (ZipArchive archive = ZipFile.OpenRead(TempNameZip))
+                using (ZipArchive archive = ZipFile.OpenRead(TempLauncherNameZip))
                 {
                     int numFiles = archive.Entries.Count;
                     int current = 1;
@@ -220,8 +245,7 @@ namespace GameLauncherUpdater
                         }
                         else
                         {
-                            if (fullName != "GameLauncherUpdater.exe" || (Wine.Detected() 
-                            && (fullName != "PresentationCore.dll" || fullName != "PresentationFramework.dll")))
+                            if (fullName != "GameLauncherUpdater.exe")
                             {
                                 if (File.Exists(fullName))
                                 {
@@ -241,9 +265,9 @@ namespace GameLauncherUpdater
 
                 try
                 {
-                    if (File.Exists(TempNameZip))
+                    if (File.Exists(TempLauncherNameZip))
                     {
-                        File.Delete(TempNameZip);
+                        File.Delete(TempLauncherNameZip);
                     }
                 }
                 catch { }
