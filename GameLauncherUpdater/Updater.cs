@@ -28,6 +28,7 @@ namespace GameLauncherUpdater
         public Updater()
         {
             InitializeComponent();
+            VersionLabel.Text = "v: " + Application.ProductVersion;
         }
 
         public void DisplayError(string Message, int Timer)

@@ -31,6 +31,7 @@ namespace GameLauncherUpdater
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Updater));
             this.DownloadProgress = new System.Windows.Forms.ProgressBar();
             this.Information = new System.Windows.Forms.Label();
+            this.VersionLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // DownloadProgress
@@ -53,6 +54,17 @@ namespace GameLauncherUpdater
             this.Information.Text = "Checking for latest update";
             this.Information.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // VersionLabel
+            // 
+            this.VersionLabel.BackColor = System.Drawing.Color.Transparent;
+            this.VersionLabel.ForeColor = System.Drawing.Color.Snow;
+            this.VersionLabel.Location = new System.Drawing.Point(240, 0);
+            this.VersionLabel.Name = "VersionLabel";
+            this.VersionLabel.Size = new System.Drawing.Size(118, 14);
+            this.VersionLabel.TabIndex = 2;
+            this.VersionLabel.Text = "v: XX.XX.XX.XXXX";
+            this.VersionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // Updater
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -60,6 +72,7 @@ namespace GameLauncherUpdater
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImage = global::GameLauncherUpdater.Properties.Resources.Background;
             this.ClientSize = new System.Drawing.Size(355, 63);
+            this.Controls.Add(this.VersionLabel);
             this.Controls.Add(this.Information);
             this.Controls.Add(this.DownloadProgress);
             this.DoubleBuffered = true;
@@ -80,6 +93,7 @@ namespace GameLauncherUpdater
 
         private System.Windows.Forms.ProgressBar DownloadProgress;
         private System.Windows.Forms.Label Information;
+        private System.Windows.Forms.Label VersionLabel;
     }
 }
 
