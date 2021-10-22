@@ -1,6 +1,5 @@
-using System.Resources;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Resources;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("GameLauncherUpdater")]
@@ -15,6 +14,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("c3dfd242-2688-4228-88e8-d4588cba1833")]
 
-[assembly: AssemblyVersion("1.0.0.10")]
-[assembly: AssemblyFileVersion("1.0.0.10")]
+[assembly: AssemblyVersion("1.0.1.00")]
+[assembly: AssemblyFileVersion("1.0.1.00")]
 [assembly: NeutralResourcesLanguage("en-US")]

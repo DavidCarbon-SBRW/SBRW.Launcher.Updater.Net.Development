@@ -9,7 +9,7 @@ namespace GameLauncherUpdater.App.Classes.UpdaterCore.Json
         public string name { get; set; }
 
         public string prerelease { get; set; }
-        
+
         public List<AssetModel> assets { get; set; }
 
         public class AssetModel

@@ -1,19 +1,19 @@
+using GameLauncherUpdater.App.Classes.SystemPlatform.UnixOS;
+using GameLauncherUpdater.App.Classes.UpdaterCore.Json;
+using GameLauncherUpdater.App.Classes.UpdaterCore.Support;
+using GameLauncherUpdater.App.Classes.UpdaterCore.Time;
+using GameLauncherUpdater.App.Classes.UpdaterCore.Validator.JSON;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Windows.Forms;
 using System.IO.Compression;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Web.Script.Serialization;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Security;
-using GameLauncherUpdater.App.Classes.UpdaterCore.Json;
-using GameLauncherUpdater.App.Classes.UpdaterCore.Time;
-using GameLauncherUpdater.App.Classes.SystemPlatform.UnixOS;
-using GameLauncherUpdater.App.Classes.UpdaterCore.Validator.JSON;
-using GameLauncherUpdater.App.Classes.UpdaterCore.Support;
+using System.Windows.Forms;
 
 namespace GameLauncherUpdater
 {
@@ -87,23 +87,20 @@ namespace GameLauncherUpdater
 
             ServicePointManager.DnsRefreshTimeout = (int)TimeSpan.FromSeconds(30).TotalMilliseconds;
             ServicePointManager.Expect100Continue = true;
-            try { /* TLS 1.3 */ ServicePointManager.SecurityProtocol |= (SecurityProtocolType)12288 | SecurityProtocolType.Tls12 | 
-                    SecurityProtocolType.Tls11 | SecurityProtocolType.Tls; }
+            try
+            { /* TLS 1.3 */
+                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)12288 | SecurityProtocolType.Tls12;
+            }
             catch (NotSupportedException)
             {
-                try { /* TLS 1.2 */ ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | 
-                        SecurityProtocolType.Tls11 | SecurityProtocolType.Tls; }
-                catch (NotSupportedException)
-                {
-                    try { /* TLS 1.1 */ ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11 | SecurityProtocolType.Tls; }
-                    catch (NotSupportedException)
-                    {
-                        try { /* TLS 1.0 */ ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls; }
-                        catch { }
-                    }
+                try
+                { /* TLS 1.2 */
+                    ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
                 }
+                catch (NotSupportedException)
+                { }
             }
-            ServicePointManager.ServerCertificateValidationCallback = 
+            ServicePointManager.ServerCertificateValidationCallback =
                 (Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
             {
                 bool isOk = true;
