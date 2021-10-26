@@ -22,7 +22,7 @@ namespace GameLauncherUpdater
         private static string LauncherFolder = Strings.Encode(AppDomain.CurrentDomain.BaseDirectory);
         private static string LauncherUpdaterFolder = Strings.Encode(Path.Combine(LauncherFolder, "Updater"));
         private static string TempLauncherNameZip = (!UnixOS.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Launcher_Update.zip");
-        private static string TempUpdaterNameZip = Path.Combine(LauncherUpdaterFolder, "Support_Update.zip");
+        //private static string TempUpdaterNameZip = Path.Combine(LauncherUpdaterFolder, "Support_Update.zip");
         private static bool UsingPreview = false;
         private static string Version;
 
@@ -30,7 +30,7 @@ namespace GameLauncherUpdater
         {
             InitializeComponent();
             VersionLabel.Text = "v: " + Application.ProductVersion;
-            Shown += (x, y) => 
+            Shown += (x, y) =>
             {
                 DoUpdate();
             };
@@ -42,7 +42,7 @@ namespace GameLauncherUpdater
             Time.WaitSeconds(Timer);
             Application.Exit();
         }
-        
+
         public void DoUpdate()
         {
             string[] args = Environment.GetCommandLineArgs();
@@ -94,7 +94,7 @@ namespace GameLauncherUpdater
             {
                 Version = "0.0.0.0";
             }
-            
+
             try
             {
                 WebClient client = new WebClient();
@@ -116,14 +116,14 @@ namespace GameLauncherUpdater
                                 Directory.CreateDirectory(LauncherUpdaterFolder);
                             }
 
-                            GitHubReleaseSchema LatestLauncherBuild = (UsingPreview) ? 
-                            new JavaScriptSerializer().Deserialize<List<GitHubReleaseSchema>>(JSONFile)[0] : 
+                            GitHubReleaseSchema LatestLauncherBuild = (UsingPreview) ?
+                            new JavaScriptSerializer().Deserialize<List<GitHubReleaseSchema>>(JSONFile)[0] :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
 
                             if (Version != LatestLauncherBuild.tag_name)
                             {
                                 WebClient client2 = new WebClient();
-                                client2.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion + 
+                                client2.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion +
                                     " (+https://github.com/SoapBoxRaceWorld/GameLauncher_NFSW)");
                                 client2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
                                 client2.DownloadFileCompleted += new AsyncCompletedEventHandler(Launcher_Client_DownloadFileCompleted);

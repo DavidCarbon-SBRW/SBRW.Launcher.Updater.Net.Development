@@ -79,6 +79,7 @@
     <Compile Include="App\Classes\UpdaterCore\Support\Strings.cs" />
     <Compile Include="App\Classes\UpdaterCore\Time\Time.cs" />
     <Compile Include="App\Classes\UpdaterCore\Validator\JSON\IsJSONValid.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Updater.cs">
       <SubType>Form</SubType>
     </Compile>
