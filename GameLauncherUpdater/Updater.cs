@@ -17,14 +17,14 @@ namespace GameLauncherUpdater
 {
     public partial class Updater : Form
     {
-        private static string GitHub_Launcher_Stable = "https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases/latest";
-        private static string GitHub_Launcher_Beta = "https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases";
-        private static string LauncherFolder = Strings.Encode(AppDomain.CurrentDomain.BaseDirectory);
-        private static string LauncherUpdaterFolder = Strings.Encode(Path.Combine(LauncherFolder, "Updater"));
-        private static string TempLauncherNameZip = (!UnixOS.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Launcher_Update.zip");
+        private static string GitHub_Launcher_Stable { get; set; } = "https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases/latest";
+        private static string GitHub_Launcher_Beta { get; set; } = "https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases";
+        private static string LauncherFolder { get; set; } = Strings.Encode(AppDomain.CurrentDomain.BaseDirectory);
+        private static string LauncherUpdaterFolder { get; set; } = Strings.Encode(Path.Combine(LauncherFolder, "Updater"));
+        private static string TempLauncherNameZip { get; set; } = (!UnixOS.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Launcher_Update.zip");
         //private static string TempUpdaterNameZip = Path.Combine(LauncherUpdaterFolder, "Support_Update.zip");
-        private static bool UsingPreview = false;
-        private static string Version;
+        private static bool UsingPreview { get; set; }
+        private static string Version { get; set; }
 
         public Updater()
         {
@@ -43,23 +43,84 @@ namespace GameLauncherUpdater
             Application.Exit();
         }
 
+        private static GitHubReleaseSchema Insider_Release_Tag(string JSON_Data, string Current_Launcher_Build)
+        {
+            GitHubReleaseSchema Temp_Latest_Launcher_Build = new GitHubReleaseSchema();
+
+            if (IsJSONValid.ValidJson(JSON_Data) && !string.IsNullOrWhiteSpace(Current_Launcher_Build))
+            {
+                int Top_Ten = 0;
+                bool Latest_Found_Build = false;
+
+                List<GitHubReleaseSchema> Scrollable_List = new List<GitHubReleaseSchema>();
+                Scrollable_List.AddRange(new JavaScriptSerializer().Deserialize<List<GitHubReleaseSchema>>(JSON_Data));
+
+                if (Scrollable_List.Count > 0)
+                {
+                    foreach (GitHubReleaseSchema GH_Releases in Scrollable_List)
+                    {
+                        if (!string.IsNullOrWhiteSpace(GH_Releases.tag_name))
+                        {
+                            if (!GH_Releases.prerelease && !Latest_Found_Build)
+                            {
+                                Latest_Found_Build = true;
+                                Temp_Latest_Launcher_Build = GH_Releases;
+                            }
+
+                            if (Current_Launcher_Build.CompareTo(GH_Releases.tag_name) < 0)
+                            {
+                                return GH_Releases;
+                            }
+                            else if (Top_Ten >= 10)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                Top_Ten++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Temp_Latest_Launcher_Build;
+        }
+
         public void DoUpdate()
         {
             string[] args = Environment.GetCommandLineArgs();
 
             if (args.Length == 2)
             {
+                int Process_Live_ID = 0;
                 bool Launcher_Process_ID_Terminated = false;
+
                 try
                 {
-                    Process Launcher_Process_ID = Process.GetProcessById(Convert.ToInt32(args[1]));
-                    if (!Launcher_Process_ID.HasExited)
+                    if (int.TryParse(args[1], out int Converted_Process_ID))
                     {
-                        Launcher_Process_ID_Terminated = Launcher_Process_ID.CloseMainWindow();
+                        Process_Live_ID = Converted_Process_ID;
 
-                        if (!Launcher_Process_ID_Terminated)
+                        if (Process_Live_ID > 0)
                         {
-                            Launcher_Process_ID.Kill();
+                            Process Launcher_Process_ID = Process.GetProcessById(Process_Live_ID);
+                            if (!Launcher_Process_ID.HasExited)
+                            {
+                                Launcher_Process_ID_Terminated = Launcher_Process_ID.CloseMainWindow();
+
+                                if (!Launcher_Process_ID_Terminated)
+                                {
+                                    Launcher_Process_ID.Kill();
+                                }
+                            }
+                        }
+                        else if (Process_Live_ID <= 0 && MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" + 
+                            "\nClick Yes to Download the Stable Build" +
+                            "\nClick No to Download the Beta Build", "GameLauncherUpdater", MessageBoxButtons.YesNo) == DialogResult.No)
+                        {
+                            BranchStatus.Text = "Preview Branch";
+                            UsingPreview = true;
                         }
                     }
                 }
@@ -69,7 +130,7 @@ namespace GameLauncherUpdater
                     {
                         if (!Launcher_Process_ID_Terminated)
                         {
-                            Process.GetProcessById(Convert.ToInt32(args[1])).Kill();
+                            Process.GetProcessById(Convert.ToInt32(Process_Live_ID)).Kill();
                         }
                     }
                     catch { }
@@ -79,6 +140,17 @@ namespace GameLauncherUpdater
             if (args.Length == 3)
             {
                 if (args[2].ToString() == "Preview")
+                {
+                    BranchStatus.Text = "Preview Branch";
+                    UsingPreview = true;
+                }
+            }
+
+            if (args.Length <= 1)
+            {
+                if (MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" +
+                            "\n\nClick Yes to Download the Stable Build" +
+                            "\n\nClick No to Download the Beta Build", "GameLauncherUpdater", MessageBoxButtons.YesNo) == DialogResult.No)
                 {
                     BranchStatus.Text = "Preview Branch";
                     UsingPreview = true;
@@ -117,7 +189,7 @@ namespace GameLauncherUpdater
                             }
 
                             GitHubReleaseSchema LatestLauncherBuild = (UsingPreview) ?
-                            new JavaScriptSerializer().Deserialize<List<GitHubReleaseSchema>>(JSONFile)[0] :
+                            Insider_Release_Tag(JSONFile, Version) :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
 
                             if (Version != LatestLauncherBuild.tag_name)
