@@ -22,7 +22,6 @@ namespace GameLauncherUpdater
         private static string LauncherFolder { get; set; } = Strings.Encode(AppDomain.CurrentDomain.BaseDirectory);
         private static string LauncherUpdaterFolder { get; set; } = Strings.Encode(Path.Combine(LauncherFolder, "Updater"));
         private static string TempLauncherNameZip { get; set; } = (!UnixOS.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Launcher_Update.zip");
-        //private static string TempUpdaterNameZip = Path.Combine(LauncherUpdaterFolder, "Support_Update.zip");
         private static bool UsingPreview { get; set; }
         private static string Version { get; set; }
 
@@ -157,7 +156,12 @@ namespace GameLauncherUpdater
                 }
             }
 
-            if (File.Exists("GameLauncher.exe"))
+            if (File.Exists("SBRW.Launcher.exe"))
+            {
+                var versionInfo = FileVersionInfo.GetVersionInfo("SBRW.Launcher.exe");
+                Version = versionInfo.ProductVersion;
+            }
+            else if (File.Exists("GameLauncher.exe"))
             {
                 var versionInfo = FileVersionInfo.GetVersionInfo("GameLauncher.exe");
                 Version = versionInfo.ProductVersion;
@@ -204,7 +208,15 @@ namespace GameLauncherUpdater
                             }
                             else
                             {
-                                Process.Start(@"GameLauncher.exe");
+                                if (File.Exists("SBRW.Launcher.exe"))
+                                {
+                                    Process.Start(@"SBRW.Launcher.exe");
+                                }
+                                else if (File.Exists("GameLauncher.exe"))
+                                {
+                                    Process.Start(@"GameLauncher.exe");
+                                }
+
                                 DisplayError("Up To Date. Starting SBRW Launcher", 2);
                             }
                         }
@@ -304,7 +316,15 @@ namespace GameLauncherUpdater
             }
             catch { }
 
-            Process.Start(@"GameLauncher.exe");
+            if (File.Exists("SBRW.Launcher.exe"))
+            {
+                Process.Start(@"SBRW.Launcher.exe");
+            }
+            else if (File.Exists("GameLauncher.exe"))
+            {
+                Process.Start(@"GameLauncher.exe");
+            }
+
             DisplayError("Sucessfully Updated. Starting SBRW Launcher", 2);
         }
     }
