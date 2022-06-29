@@ -211,6 +211,18 @@ namespace GameLauncherUpdater
                                 if (File.Exists("SBRW.Launcher.exe"))
                                 {
                                     Process.Start(@"SBRW.Launcher.exe");
+
+                                    try
+                                    {
+                                        if (File.Exists("GameLauncher.exe"))
+                                        {
+                                            File.Delete("GameLauncher.exe");
+                                        }
+                                    }
+                                    catch
+                                    {
+
+                                    }
                                 }
                                 else if (File.Exists("GameLauncher.exe"))
                                 {
@@ -319,6 +331,18 @@ namespace GameLauncherUpdater
             if (File.Exists("SBRW.Launcher.exe"))
             {
                 Process.Start(@"SBRW.Launcher.exe");
+
+                try
+                {
+                    if (File.Exists("GameLauncher.exe"))
+                    {
+                        File.Delete("GameLauncher.exe");
+                    }
+                }
+                catch
+                {
+
+                }
             }
             else if (File.Exists("GameLauncher.exe"))
             {
