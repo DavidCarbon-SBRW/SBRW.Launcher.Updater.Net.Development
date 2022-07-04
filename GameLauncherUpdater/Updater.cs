@@ -235,7 +235,7 @@ namespace GameLauncherUpdater
                             Insider_Release_Tag(JSONFile, Version) :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
 
-                            if (Version != LatestLauncherBuild.tag_name)
+                            if ((UsingDevelopment ? Version_Build : Version) != LatestLauncherBuild.tag_name)
                             {
                                 WebClient client2 = new WebClient();
                                 client2.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion +
