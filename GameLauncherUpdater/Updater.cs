@@ -89,6 +89,7 @@ namespace GameLauncherUpdater
         public void DoUpdate()
         {
             string[] args = Environment.GetCommandLineArgs();
+            bool Disable_Popup = false;
 
             if (args.Length == 2)
             {
@@ -113,13 +114,15 @@ namespace GameLauncherUpdater
                                     Launcher_Process_ID.Kill();
                                 }
                             }
+
+                            Disable_Popup = true;
                         }
                         else if (Process_Live_ID <= 0 && MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" + 
                             "\nClick Yes to Download the Stable Build" +
                             "\nClick No to Download the Beta Build", "GameLauncherUpdater", MessageBoxButtons.YesNo) == DialogResult.No)
                         {
                             BranchStatus.Text = "Preview Branch";
-                            UsingPreview = true;
+                            Disable_Popup = UsingPreview = true;
                         }
                     }
                 }
@@ -132,7 +135,12 @@ namespace GameLauncherUpdater
                             Process.GetProcessById(Convert.ToInt32(Process_Live_ID)).Kill();
                         }
                     }
-                    catch { }
+                    catch 
+                    { 
+
+                    }
+
+                    Disable_Popup = true;
                 }
             }
 
@@ -143,9 +151,13 @@ namespace GameLauncherUpdater
                     BranchStatus.Text = "Preview Branch";
                     UsingPreview = true;
                 }
+                else
+                {
+                    Disable_Popup = true;
+                }
             }
 
-            if (args.Length <= 1)
+            if (!Disable_Popup)
             {
                 if (MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" +
                             "\n\nClick Yes to Download the Stable Build" +
