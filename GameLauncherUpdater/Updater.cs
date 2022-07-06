@@ -17,13 +17,16 @@ namespace GameLauncherUpdater
 {
     public partial class Updater : Form
     {
+        private static string GitHub_Launcher_Developer { get; set; } = "https://api.github.com/repos/DavidCarbon-SBRW/SBRW.Launcher.Releases/releases/latest";
         private static string GitHub_Launcher_Stable { get; set; } = "https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases/latest";
         private static string GitHub_Launcher_Beta { get; set; } = "https://api.github.com/repos/SoapboxRaceWorld/GameLauncher_NFSW/releases";
         private static string LauncherFolder { get; set; } = Strings.Encode(AppDomain.CurrentDomain.BaseDirectory);
         private static string LauncherUpdaterFolder { get; set; } = Strings.Encode(Path.Combine(LauncherFolder, "Updater"));
         private static string TempLauncherNameZip { get; set; } = (!UnixOS.Detected()) ? Strings.Encode(Path.GetTempFileName()) : Path.Combine(LauncherUpdaterFolder, "Launcher_Update.zip");
+        private static bool UsingDevelopment { get; set; }
         private static bool UsingPreview { get; set; }
         private static string Version { get; set; }
+        private static string Version_Build { get; set; }
 
         public Updater()
         {
@@ -89,6 +92,7 @@ namespace GameLauncherUpdater
         public void DoUpdate()
         {
             string[] args = Environment.GetCommandLineArgs();
+            bool Disable_Popup = false;
 
             if (args.Length == 2)
             {
@@ -113,13 +117,29 @@ namespace GameLauncherUpdater
                                     Launcher_Process_ID.Kill();
                                 }
                             }
+
+                            Disable_Popup = true;
                         }
-                        else if (Process_Live_ID <= 0 && MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" + 
+                        else if (Process_Live_ID == -1)
+                        {
+                            Disable_Popup = true;
+                        }
+                        else if (Process_Live_ID == -2)
+                        {
+                            BranchStatus.Text = "Preview Branch";
+                            Disable_Popup = UsingPreview = true;
+                        }
+                        else if (Process_Live_ID == -3)
+                        {
+                            BranchStatus.Text = "Developer Branch";
+                            Disable_Popup = UsingDevelopment = true;
+                        }
+                        else if (MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" + 
                             "\nClick Yes to Download the Stable Build" +
                             "\nClick No to Download the Beta Build", "GameLauncherUpdater", MessageBoxButtons.YesNo) == DialogResult.No)
                         {
                             BranchStatus.Text = "Preview Branch";
-                            UsingPreview = true;
+                            Disable_Popup = UsingPreview = true;
                         }
                     }
                 }
@@ -132,7 +152,12 @@ namespace GameLauncherUpdater
                             Process.GetProcessById(Convert.ToInt32(Process_Live_ID)).Kill();
                         }
                     }
-                    catch { }
+                    catch 
+                    { 
+
+                    }
+
+                    Disable_Popup = true;
                 }
             }
 
@@ -141,11 +166,25 @@ namespace GameLauncherUpdater
                 if (args[2].ToString() == "Preview")
                 {
                     BranchStatus.Text = "Preview Branch";
-                    UsingPreview = true;
+                    Disable_Popup = UsingPreview = true;
+                }
+                else if (args[2].ToString() == "Developer")
+                {
+                    BranchStatus.Text = "Developer Branch";
+                    Disable_Popup = UsingDevelopment = true;
+                }
+                else if (args[2].ToString() == "Stable")
+                {
+                    Disable_Popup = true;
                 }
             }
 
-            if (args.Length <= 1)
+            if (args.Length == 4)
+            {
+                Version_Build = args[3].ToString();
+            }
+
+            if (!Disable_Popup)
             {
                 if (MessageBox.Show(null, "Which Launcher Build Would you Opt Into?" +
                             "\n\nClick Yes to Download the Stable Build" +
@@ -174,7 +213,7 @@ namespace GameLauncherUpdater
             try
             {
                 WebClient client = new WebClient();
-                Uri StringToUri = new Uri(UsingPreview ? GitHub_Launcher_Beta : GitHub_Launcher_Stable);
+                Uri StringToUri = new Uri(UsingDevelopment ? GitHub_Launcher_Developer : UsingPreview ? GitHub_Launcher_Beta : GitHub_Launcher_Stable);
                 client.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion +
                     " (+https://github.com/SoapBoxRaceWorld/GameLauncher_NFSW)");
                 client.CancelAsync();
@@ -196,33 +235,22 @@ namespace GameLauncherUpdater
                             Insider_Release_Tag(JSONFile, Version) :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
 
-                            if (Version != LatestLauncherBuild.tag_name)
+                            if ((UsingDevelopment ? Version_Build : Version) != LatestLauncherBuild.tag_name)
                             {
                                 WebClient client2 = new WebClient();
                                 client2.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion +
                                     " (+https://github.com/SoapBoxRaceWorld/GameLauncher_NFSW)");
                                 client2.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
                                 client2.DownloadFileCompleted += new AsyncCompletedEventHandler(Launcher_Client_DownloadFileCompleted);
-                                client2.DownloadFileAsync(new Uri("http://github.com/SoapboxRaceWorld/GameLauncher_NFSW/releases/download/" +
-                                    LatestLauncherBuild.tag_name + "/Release_" + LatestLauncherBuild.tag_name + ".zip"), TempLauncherNameZip);
+                                client2.DownloadFileAsync(new Uri((UsingDevelopment ? "http://github.com/DavidCarbon-SBRW/SBRW.Launcher.Releases/releases/download/" : 
+                                    "http://github.com/SoapboxRaceWorld/GameLauncher_NFSW/releases/download/") + 
+                                    LatestLauncherBuild.tag_name + (UsingDevelopment ? "/" : "/Release_") + LatestLauncherBuild.tag_name + ".zip"), TempLauncherNameZip);
                             }
                             else
                             {
                                 if (File.Exists("SBRW.Launcher.exe"))
                                 {
                                     Process.Start(@"SBRW.Launcher.exe");
-
-                                    try
-                                    {
-                                        if (File.Exists("GameLauncher.exe"))
-                                        {
-                                            File.Delete("GameLauncher.exe");
-                                        }
-                                    }
-                                    catch
-                                    {
-
-                                    }
                                 }
                                 else if (File.Exists("GameLauncher.exe"))
                                 {
@@ -331,18 +359,6 @@ namespace GameLauncherUpdater
             if (File.Exists("SBRW.Launcher.exe"))
             {
                 Process.Start(@"SBRW.Launcher.exe");
-
-                try
-                {
-                    if (File.Exists("GameLauncher.exe"))
-                    {
-                        File.Delete("GameLauncher.exe");
-                    }
-                }
-                catch
-                {
-
-                }
             }
             else if (File.Exists("GameLauncher.exe"))
             {
