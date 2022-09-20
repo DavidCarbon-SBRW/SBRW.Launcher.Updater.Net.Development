@@ -244,7 +244,8 @@ namespace GameLauncherUpdater
                                 client2.DownloadFileCompleted += new AsyncCompletedEventHandler(Launcher_Client_DownloadFileCompleted);
                                 client2.DownloadFileAsync(new Uri((UsingDevelopment ? "http://github.com/DavidCarbon-SBRW/SBRW.Launcher.Releases/releases/download/" : 
                                     "http://github.com/SoapboxRaceWorld/GameLauncher_NFSW/releases/download/") + 
-                                    LatestLauncherBuild.tag_name + (UsingDevelopment ? "/" : "/Release_") + LatestLauncherBuild.tag_name + ".zip"), TempLauncherNameZip);
+                                    LatestLauncherBuild.tag_name + "/" + (UnixOS.Detected() ? "Unix." : "") + (UsingDevelopment ? "" : "Release_") + 
+                                    LatestLauncherBuild.tag_name + ".zip"), TempLauncherNameZip);
                             }
                             else
                             {
