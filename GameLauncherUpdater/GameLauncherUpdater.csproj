@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\Classes\SystemPlatform\Required\DLL_NTDLL.cs" />
     <Compile Include="App\Classes\SystemPlatform\UnixOS\UnixOS.cs" />
     <Compile Include="App\Classes\UpdaterCore\Json\GitHubReleaseSchema.cs" />
     <Compile Include="App\Classes\UpdaterCore\Support\Strings.cs" />

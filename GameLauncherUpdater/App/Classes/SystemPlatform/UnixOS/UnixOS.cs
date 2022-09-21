@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameLauncherUpdater.App.Classes.SystemPlatform.Required;
+using System;
 
 namespace GameLauncherUpdater.App.Classes.SystemPlatform.UnixOS
 {
@@ -50,7 +51,7 @@ namespace GameLauncherUpdater.App.Classes.SystemPlatform.UnixOS
 
         public static bool AmI()
         {
-            if (Type.GetType("Mono.Runtime") != null)
+            if (Type.GetType("Mono.Runtime") != null || DLL_NTDLL.WineDetected())
             {
                 return true;
             }

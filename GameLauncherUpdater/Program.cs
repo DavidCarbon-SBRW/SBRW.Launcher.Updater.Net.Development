@@ -15,6 +15,7 @@ namespace GameLauncherUpdater
         static void Main()
         {
             Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
             AppContext.SetSwitch("Switch.System.Net.DontEnableSchUseStrongCrypto", false);
             AppContext.SetSwitch("Switch.System.Net.DontEnableSystemDefaultTlsVersions", false);
             ServicePointManager.DnsRefreshTimeout = (int)TimeSpan.FromSeconds(30).TotalMilliseconds;
@@ -44,6 +45,7 @@ namespace GameLauncherUpdater
                 }
                 return isOk;
             };
+
             Application.Run(new Updater());
         }
     }
