@@ -94,7 +94,7 @@ namespace GameLauncherUpdater
             string[] args = Environment.GetCommandLineArgs();
             bool Disable_Popup = false;
 
-            if (args.Length == 2)
+            if (args.Length >= 2)
             {
                 int Process_Live_ID = 0;
                 bool Launcher_Process_ID_Terminated = false;
@@ -161,7 +161,7 @@ namespace GameLauncherUpdater
                 }
             }
 
-            if (args.Length == 3)
+            if (args.Length >= 3)
             {
                 if (args[2].ToString() == "Preview")
                 {
@@ -179,7 +179,7 @@ namespace GameLauncherUpdater
                 }
             }
 
-            if (args.Length == 4)
+            if (args.Length >= 4)
             {
                 Version_Build = args[3].ToString();
             }
