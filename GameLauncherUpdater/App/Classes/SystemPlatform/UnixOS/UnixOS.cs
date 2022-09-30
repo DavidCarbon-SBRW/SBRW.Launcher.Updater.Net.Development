@@ -51,20 +51,42 @@ namespace GameLauncherUpdater.App.Classes.SystemPlatform.UnixOS
 
         public static bool AmI()
         {
-            if (Type.GetType("Mono.Runtime") != null || DLL_NTDLL.WineDetected())
+            try
             {
-                return true;
-            }
-            else
-            {
-                switch (ID(Platform()))
+                if (Type.GetType("Mono.Runtime") != null || DLL_NTDLL.WineDetected())
                 {
-                    case PlatformIDPort.Unix:
-                    case PlatformIDPort.MonoLegacy:
-                    case PlatformIDPort.MacOSX:
-                        return true;
-                    default:
-                        return false;
+                    return true;
+                }
+                else
+                {
+                    switch (ID(Platform()))
+                    {
+                        case PlatformIDPort.Unix:
+                        case PlatformIDPort.MonoLegacy:
+                        case PlatformIDPort.MacOSX:
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+            }
+            catch
+            {
+                if (Type.GetType("Mono.Runtime") != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    switch (ID(Platform()))
+                    {
+                        case PlatformIDPort.Unix:
+                        case PlatformIDPort.MonoLegacy:
+                        case PlatformIDPort.MacOSX:
+                            return true;
+                        default:
+                            return false;
+                    }
                 }
             }
         }
