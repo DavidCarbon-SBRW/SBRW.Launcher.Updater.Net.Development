@@ -85,7 +85,7 @@ namespace GameLauncherUpdater
                                 Temp_Latest_Launcher_Build = GH_Releases;
                             }
 
-                            if (Current_Launcher_Build.CompareTo(GH_Releases.tag_name) < 0)
+                            if (Current_Launcher_Build.Comparisons(GH_Releases.tag_name) < 0)
                             {
                                 return GH_Releases;
                             }
@@ -254,7 +254,7 @@ namespace GameLauncherUpdater
                             Insider_Release_Tag(JSONFile, Version) :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
                             int Revision = UsingDevelopment ? 
-                            Version_Build.CompareTo(LatestLauncherBuild.tag_name) : Strings.Comparisons(Version, LatestLauncherBuild.tag_name);
+                            Version_Build.CompareTo(LatestLauncherBuild.tag_name) : Version.Comparisons(LatestLauncherBuild.tag_name);
                             if (Revision < 0)
                             {
                                 WebClient client2 = new WebClient();

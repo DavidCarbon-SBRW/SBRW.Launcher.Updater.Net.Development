@@ -3,9 +3,9 @@ using System.Text;
 
 namespace GameLauncherUpdater.App.Classes.UpdaterCore.Support
 {
-    class Strings
+    public static class Strings
     {
-        public static string Encode(string Value)
+        public static string Encode(this string Value)
         {
             return Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(Value));
         }
@@ -25,7 +25,7 @@ namespace GameLauncherUpdater.App.Classes.UpdaterCore.Support
         /// <b>1</b> if v1 is higher version number than v2<br></br>
         /// <b>-1000</b> if we couldn't figure it out (something went wrong)
         /// </returns>
-        public static int Comparisons(string v1, string v2)
+        public static int Comparisons(this string v1, string v2)
         {
             if (string.IsNullOrWhiteSpace(v1) || string.IsNullOrWhiteSpace(v2))
             {
