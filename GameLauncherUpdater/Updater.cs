@@ -85,11 +85,11 @@ namespace GameLauncherUpdater
                                 Temp_Latest_Launcher_Build = GH_Releases;
                             }
 
-                            if (Current_Launcher_Build.Comparisons(GH_Releases.tag_name) < 0)
+                            if (Current_Launcher_Build.Outdated(GH_Releases.tag_name))
                             {
                                 return GH_Releases;
                             }
-                            else if (Top_Ten >= 10)
+                            else if (Top_Ten >= 20)
                             {
                                 break;
                             }
@@ -253,9 +253,7 @@ namespace GameLauncherUpdater
                             GitHubReleaseSchema LatestLauncherBuild = (UsingPreview) ?
                             Insider_Release_Tag(JSONFile, Version) :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
-                            int Revision = UsingDevelopment ? 
-                            Version_Build.CompareTo(LatestLauncherBuild.tag_name) : Version.Comparisons(LatestLauncherBuild.tag_name);
-                            if (Revision < 0)
+                            if (Version_Build.Replace('-', '.').Outdated(LatestLauncherBuild.tag_name.Replace('-', '.')))
                             {
                                 WebClient client2 = new WebClient();
                                 client2.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion +
