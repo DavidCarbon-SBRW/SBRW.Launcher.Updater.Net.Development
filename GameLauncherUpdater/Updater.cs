@@ -253,7 +253,7 @@ namespace GameLauncherUpdater
                             GitHubReleaseSchema LatestLauncherBuild = (UsingPreview) ?
                             Insider_Release_Tag(JSONFile, Version) :
                             new JavaScriptSerializer().Deserialize<GitHubReleaseSchema>(JSONFile);
-                            if (Version_Build.Replace('-', '.').Outdated(LatestLauncherBuild.tag_name.Replace('-', '.')))
+                            if ((Version_Build??Version).Replace('-', '.').Outdated(LatestLauncherBuild.tag_name.Replace('-', '.')))
                             {
                                 WebClient client2 = new WebClient();
                                 client2.Headers.Add("user-agent", "GameLauncherUpdater " + Application.ProductVersion +
